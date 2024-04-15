@@ -193,5 +193,5 @@ all = ["defusedxml", "fsspec", "imagecodecs (>=2023.8.12)", "lxml", "matplotlib"
 
 [metadata]
 lock-version = "2.0"
-python-versions = "^3.10"
-content-hash = "c93a1d68f1068626490a62867c8198b8219851fd8ccea7a1e1fb47b018d62720"
+python-versions = "^3.9"
+content-hash = "3e0a074cf945a8ff8cc4dd99ac02b104c94d5d9cc82c9c644bac667494efe512"
