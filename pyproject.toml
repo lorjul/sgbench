@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "SGBench"
-version = "0.1.1"
+version = "0.1.2"
 description = "A collection of metrics for scene graph generation"
 authors = ["Julian Lorenz <julian.lorenz@uni-a.de>"]
 license = "MIT"

@@ -36,8 +36,7 @@ def parse_pred(path) -> Dict[str, PredImg]:
             triplets = np.empty((0, 3), dtype=int)
         else:
             triplets = deduplicate(np.array(img["triplets"]))
-        # TODO: remove these hard-coded assertions
-        assert (triplets[:, 2] >= 0).all() and (triplets[:, 2] < 56).all()
+        assert (triplets[:, 2] >= 0).all()
 
         if (
             "ng_triplets" not in img
@@ -47,8 +46,7 @@ def parse_pred(path) -> Dict[str, PredImg]:
             ng_triplets = np.empty((0, 3), dtype=int)
         else:
             ng_triplets = deduplicate(np.array(img["ng_triplets"]))
-        # TODO: remove these hard-coded assertions
-        assert (ng_triplets[:, 2] >= 0).all() and (ng_triplets[:, 2] < 56).all()
+        assert (ng_triplets[:, 2] >= 0).all()
 
         seg_ids = []
         cats = []
@@ -65,9 +63,7 @@ def parse_pred(path) -> Dict[str, PredImg]:
         else:
             seg_ids = None
         cats = np.array(cats)
-        # TODO: remove these hard-coded assertions
         assert (cats >= 0).all()
-        assert (cats < 133).all()
         bboxes = np.array(bboxes)
 
         imgs[img_id] = PredImg(
