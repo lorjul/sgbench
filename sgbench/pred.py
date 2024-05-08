@@ -1,4 +1,3 @@
-import json
 from typing import Dict, Optional
 import numpy as np
 from dataclasses import dataclass
@@ -9,8 +8,6 @@ class PredImg:
     id: str
     triplets: np.ndarray
     ng_triplets: np.ndarray
-    # not used at the moment
-    seg_ids: Optional[np.ndarray]
     categories: Optional[np.ndarray]
     bboxes: Optional[np.ndarray]
     seg_filename: Optional[str]
@@ -24,10 +21,7 @@ def deduplicate(triplets: np.ndarray):
     return triplets[np.sort(idxes)]
 
 
-def parse_pred(path) -> Dict[str, PredImg]:
-    with open(path) as f:
-        pred_data = json.load(f)
-
+def parse_pred(pred_data) -> Dict[str, PredImg]:
     imgs = {}
     for img in pred_data["images"]:
         img_id = img["id"]
@@ -48,20 +42,13 @@ def parse_pred(path) -> Dict[str, PredImg]:
             ng_triplets = deduplicate(np.array(img["ng_triplets"]))
         assert (ng_triplets[:, 2] >= 0).all()
 
-        seg_ids = []
         cats = []
         bboxes = []
 
         for s in img["annotation"]:
-            if "seg_id" in s:
-                seg_ids.append(s["seg_id"])
             cats.append(s["category"])
-            bboxes.append(s["bbox"])
+            bboxes.append(s["bbox"][:4])
 
-        if seg_ids:
-            seg_ids = np.array(seg_ids)
-        else:
-            seg_ids = None
         cats = np.array(cats)
         assert (cats >= 0).all()
         bboxes = np.array(bboxes)
@@ -70,7 +57,6 @@ def parse_pred(path) -> Dict[str, PredImg]:
             id=img_id,
             triplets=triplets,
             ng_triplets=ng_triplets,
-            seg_ids=seg_ids,
             categories=cats,
             bboxes=bboxes,
             seg_filename=img.get("seg_filename"),

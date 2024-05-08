@@ -1,27 +1,5 @@
 # match predicted segmentatino mask with ground truth and return the ground truth id
-from PIL import Image
-import tifffile
 import numpy as np
-
-
-def rgb2id(color: np.ndarray):
-    """Converts a given color to the internal segmentation id
-    Adapted from https://github.com/cocodataset/panopticapi/blob/7bb4655548f98f3fedc07bf37e9040a992b054b0/panopticapi/utils.py#L73
-    """
-    if color.dtype == np.uint8:
-        color = color.astype(np.int32)
-    return color[..., 0] + 256 * color[..., 1] + 256 * 256 * color[..., 2]
-
-
-def load_rgb_seg_mask(path, seg_ids: np.ndarray):
-    with Image.open(path) as img:
-        ids_arr = rgb2id(np.asarray(img))
-    # convert to NxHxW shape
-    return ids_arr[None] == seg_ids[:, None, None]
-
-
-def load_layered_seg_mask(path):
-    return tifffile.imread(path).astype(bool)
 
 
 def mask_iou(mask1: np.ndarray, mask2: np.ndarray):
@@ -63,11 +41,12 @@ def match_boxes(
     assert gt_boxes.shape[1] == 4
     assert pred_boxes.shape[1] == 4
     assert min_thresh > 0, min_thresh
-    num_pred = len(ious)
-    label_match = pred_labels[:, None] == gt_labels[None]
-    assert label_match.shape == ious.shape
+    num_pred = len(pred_boxes)
 
     ious = box_iou(pred_boxes, gt_boxes)
+
+    label_match = pred_labels[:, None] == gt_labels[None]
+    assert label_match.shape == ious.shape
 
     # find the ground truth that overlaps most and has the correct label
     # if overlap is highest, but label does not match, use the second highest overlap
@@ -109,3 +88,38 @@ def match_masks(
     assigned_gt[iou_vals < min_thresh] = -1
 
     return assigned_gt
+
+
+def match_instances(
+    gt_instances: np.ndarray,
+    gt_labels: np.ndarray,
+    pred_instances: np.ndarray,
+    pred_labels: np.ndarray,
+) -> np.ndarray:
+    if len(gt_instances.shape) == 2 and gt_instances.shape[1] == 4:
+        return match_boxes(
+            gt_boxes=gt_instances,
+            pred_boxes=pred_instances,
+            gt_labels=gt_labels,
+            pred_labels=pred_labels,
+            min_thresh=0.5,
+        )
+    else:
+        return match_masks(
+            gt_masks=gt_instances,
+            pred_masks=pred_instances,
+            gt_labels=gt_labels,
+            pred_labels=pred_labels,
+            min_thresh=0.5,
+        )
+
+
+def remap_triplets(inst_pred2gt: np.ndarray, pred_triplets: np.ndarray) -> np.ndarray:
+    return np.stack(
+        (
+            inst_pred2gt[pred_triplets[:, 0]],
+            inst_pred2gt[pred_triplets[:, 1]],
+            pred_triplets[:, 2],
+        ),
+        axis=1,
+    )

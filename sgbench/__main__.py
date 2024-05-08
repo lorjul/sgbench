@@ -1,58 +1,36 @@
 from argparse import ArgumentParser
-import json
-from .sg_eval import evaluate
+
+try:
+    from .file import evaluate
+except ImportError:
+    raise RuntimeError(
+        """Could not import required dependencies for CLI usage. Most likely, SGBench was installed in light dependency mode.
+If you want to use the CLI, make sure that SGBench is correctly installed: pip install -U 'sgbench[all]'"""
+    )
 
 
 def cli():
     parser = ArgumentParser()
-    parser.add_argument("gt", help="Ground truth annotation file")
-    parser.add_argument("pred", nargs="+", help="Prediction triplet files")
-    parser.add_argument("--masks", default=False, action="store_true")
-    parser.add_argument(
-        "--gt_seg_dir", default=None, help="Ground truth segmentation masks directory"
-    )
+    parser.add_argument("annotation", help="JSON ground truth annotation file")
+    parser.add_argument("prediction", help="Prediction file in SGBench format")
+    parser.add_argument("--gt-masks", default=None)
     parser.add_argument(
         "--workers",
-        default=4,
         type=int,
-        help="Number of workers for multiprocessing. Set to 0 to disable multiprocessing",
-    )
-    parser.add_argument(
-        "--chunk", default=8, type=int, help="Chunk size for multiprocessing"
-    )
-    parser.add_argument(
-        "--out",
-        default=None,
-        help="Output file. If not specified, output will be written to stdout.",
+        default=0,
+        help="Number of workers to use for calculating the metrics",
     )
     args = parser.parse_args()
 
-    results = []
-    for pred_path in args.pred:
-        results.append(
-            evaluate(
-                gt_path=args.gt,
-                pred_path=pred_path,
-                use_masks=args.masks,
-                gt_seg_dir=args.gt_seg_dir,
-                num_workers=args.workers,
-                chunksize=args.chunk,
-            )
-        )
+    metrics = evaluate(
+        anno_path=args.annotation,
+        pred_path=args.prediction,
+        gt_seg_dir=args.gt_masks,
+        workers=args.workers,
+    )
 
-    if args.out is None:
-        print()
-        max_len = max(len(k) for k in results[0])
-        for pred_path, result in zip(args.pred, results):
-            print(pred_path)
-            for k, v in result.items():
-                print(k.ljust(max_len), v, sep=" : ")
-    else:
-        to_write = []
-        for pred_path, result in zip(args.pred, results):
-            to_write.append(dict(path=pred_path, **result))
-        with open(args.out, "w") as f:
-            json.dump(to_write, f, indent=4)
+    for key, value in metrics.items():
+        print(key, value, sep=": ")
 
 
 if __name__ == "__main__":
