@@ -5,6 +5,9 @@ description = "A collection of metrics for scene graph generation"
 authors = ["Julian Lorenz <julian.lorenz@uni-a.de>"]
 license = "MIT"
 readme = "README.md"
+homepage = "https://lorjul.github.io/sgbench/"
+repository = "https://github.com/lorjul/sgbench"
+keywords = ["scene graphs", "metrics"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
