@@ -66,7 +66,7 @@ For the prediction file, SGBench uses its own format as described in the followi
 
 If your model returns bounding boxes, SGBench expects a JSON file in the following format:
 
-``` json
+``` jsonc
 {
     "version": 1,
     "images": [
@@ -101,7 +101,7 @@ Each TIFF file stores the segmentation masks for a single image. Use a separate 
 
 The JSON file must be in the following format:
 
-``` json
+``` jsonc
 {
     "version": 1,
     "images": [
@@ -130,12 +130,12 @@ The JSON file must be in the following format:
 If you find this work useful, please consider citing our paper:
 
 ``` bibtex
-@misc{lorenz2024sgbench,
-      title={A Review and Efficient Implementation of Scene Graph Generation Metrics},
-      author={Julian Lorenz and Robin Schön and Katja Ludwig and Rainer Lienhart},
-      year={2024},
-      eprint={2404.09616},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV}
+@inproceedings{lorenz2024sgbench,
+  author    = {Lorenz, Julian and Schön, Robin and Ludwig, Katja and Lienhart, Rainer},
+  title     = {A Review and Efficient Implementation of Scene Graph Generation Metrics},
+  booktitle = {2024 IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW)},
+  year      = {2024},
+  pages     = {2567-2575},
+  doi       = {10.1109/CVPRW63382.2024.00263}
 }
 ```
