@@ -68,7 +68,7 @@ If your model returns bounding boxes, SGBench expects a JSON file in the followi
 
 ``` jsonc
 {
-    "version": 1,
+    "version": 2,
     "images": [
         {
             // id of the ground truth image (must match image_id in ground truth file)
@@ -95,7 +95,7 @@ If your model returns bounding boxes, SGBench expects a JSON file in the followi
 
 #### SGG With Segmentation Masks
 
-If your model returns segmentation masks, SGBench expects a ZIP file that contains a JSON file and multiple TIFF files for the segmentation masks.
+If your model returns segmentation masks, SGBench expects a ZIP file that contains a JSON file named `triplets.json` and multiple TIFF files for the segmentation masks.
 
 Each TIFF file stores the segmentation masks for a single image. Use a separate layer for every mask. You can check `sgbench.io.write_layered_seg_mask` for an example of how to write the TIFF files.
 
@@ -103,7 +103,7 @@ The JSON file must be in the following format:
 
 ``` jsonc
 {
-    "version": 1,
+    "version": 2,
     "images": [
         {
             // id of the ground truth image (must match image_id in ground truth file)

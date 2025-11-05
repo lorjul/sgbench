@@ -42,16 +42,14 @@ def parse_pred(pred_data) -> Dict[str, PredImg]:
             ng_triplets = deduplicate(np.array(img["ng_triplets"]))
         assert (ng_triplets[:, 2] >= 0).all()
 
-        cats = []
-        bboxes = []
-
-        for s in img["annotation"]:
-            cats.append(s["category"])
-            bboxes.append(s["bbox"][:4])
-
-        cats = np.array(cats)
+        cats = np.array(img["categories"])
         assert (cats >= 0).all()
-        bboxes = np.array(bboxes)
+
+        if "bboxes" in img:
+            bboxes = np.array(img["bboxes"])
+            assert bboxes.shape[-1] == 4
+        else:
+            bboxes = None
 
         imgs[img_id] = PredImg(
             id=img_id,

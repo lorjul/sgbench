@@ -60,7 +60,10 @@ def load_sgbench(pred_path, extract_dir=None):
             triplets = json.load(f)
 
             # check version
-            assert triplets.get("version") == FILE_VERSION
+            if triplets.get("version") != FILE_VERSION:
+                raise RuntimeError(
+                    f"File version mismatch! You gave me v{triplets.get('version')} but I only understand v{FILE_VERSION}"
+                )
 
             for img in triplets["images"]:
                 assert img["seg_filename"].endswith(".tiff")
