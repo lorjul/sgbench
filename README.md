@@ -8,7 +8,7 @@ For more information, visit our [project page](https://lorjul.github.io/sgbench/
 
 ``` bash
 # for the full package (includes dependencies to image loading libraries)
-pip install sgbench[all]
+pip install sgbench[io]
 # for the light package (depends only on NumPy, but supports no IO)
 pip install sgbench
 ```
@@ -22,7 +22,7 @@ We strive to make this package compatible with any scene graph generation codeba
 - [tifffile](https://github.com/cgohlke/tifffile) - To open TIFF files
 - [imagecodecs](https://github.com/cgohlke/imagecodecs) - To support compression of TIFF files
 
-If you choose to install SGBench without `[all]`, only NumPy is required.
+If you choose to install SGBench without `[io]`, only NumPy is required.
 
 ## Usage
 
@@ -52,7 +52,7 @@ pr = sgbench.pair_recall(
 
 ### Command Line Interface
 
-The CLI only works if SGBench was installed with `pip install sgbench[all]`.
+The CLI only works if SGBench was installed with `pip install sgbench[io]`.
 
     sgbench --help
 
