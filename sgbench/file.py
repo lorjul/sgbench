@@ -8,7 +8,7 @@ from pathlib import Path
 from collections import defaultdict
 import numpy as np
 from .pred import parse_pred
-from .metrics import instance_recall, predicate_rank, recall
+from .metrics import instance_recall, predicate_rank, recall, recall_inf
 from .io import load_layered_seg_mask, load_rgb_seg_mask, load_sgbench
 from .match import match_instances, remap_triplets
 from .version import FILE_VERSION
@@ -76,6 +76,22 @@ def _single_evaluate(
             num_predicates=num_predicates,
         )
 
+    inst_gt2pred = np.zeros((len(gt_instances),), dtype=bool)
+    inst_gt2pred[inst_pred2gt[inst_pred2gt != -1]] = 1
+    metrics["mR@inf"] = recall_inf(
+        mean=True,
+        gt_triplets=gt_triplets,
+        inst_gt2pred=inst_gt2pred,
+        num_predicates=num_predicates,
+    )
+    metrics["R@inf"] = recall_inf(
+        mean=False,
+        gt_triplets=gt_triplets,
+        inst_gt2pred=inst_gt2pred,
+        num_predicates=num_predicates,
+    )
+
+    # how much ground truth masks are covered?
     metrics["InstR"] = instance_recall(
         num_gt_instances=len(gt_instances), inst_pred2gt=inst_pred2gt
     )
@@ -99,6 +115,10 @@ def _missing_values(gt_triplets: np.ndarray, num_predicates: int):
     for k in (20, 50, 100):
         metrics[f"mR@{k}"] = mR
         metrics[f"R@{k}"] = 0.0
+
+    metrics["mR@inf"] = mR
+    metrics["R@inf"] = 0.0
+
     return metrics
 
 
