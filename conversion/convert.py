@@ -67,7 +67,7 @@ def cli():
 
             with open(out_dir / "triplets.json", "w") as f:
                 json.dump(
-                    obj={"version": 1, "images": converted}, fp=f, separators=(",", ":")
+                    obj={"version": 2, "images": converted}, fp=f, separators=(",", ":")
                 )
             archive.write(out_dir / "triplets.json", arcname="triplets.json")
 

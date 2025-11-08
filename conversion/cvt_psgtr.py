@@ -32,7 +32,7 @@ def convert_item(
     bboxes: np.ndarray = orig_item.refine_bboxes
     box_labels: np.ndarray = orig_item.labels - 1
     assert (box_labels >= 0).all()
-    bboxes = bboxes.tolist()
+    bboxes = bboxes[:, :4].tolist()
     categories = box_labels.tolist()
 
     # keep the ordering for standard triplets
