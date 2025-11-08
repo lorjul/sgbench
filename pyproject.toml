@@ -2,7 +2,7 @@
 name = "SGBench"
 version = "2.0.0"
 description = "A collection of metrics for scene graph generation"
-authors = [{name = "Julian Lorenz", email = "<julian.lorenz@uni-a.de>"}]
+authors = [{name = "Julian Lorenz", email = "julian.lorenz@uni-a.de"}]
 license = "MIT"
 readme = "README.md"
 homepage = "https://lorjul.github.io/sgbench/"
