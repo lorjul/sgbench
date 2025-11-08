@@ -32,15 +32,8 @@ def convert_item(
     bboxes: np.ndarray = orig_item.refine_bboxes
     box_labels: np.ndarray = orig_item.labels - 1
     assert (box_labels >= 0).all()
-    annotation = []
-    for bbox, label in zip(bboxes.tolist(), box_labels.tolist()):
-        annotation.append(
-            {
-                # no seg_id available for these methods
-                "bbox": bbox,
-                "category": label,
-            }
-        )
+    bboxes = bboxes.tolist()
+    categories = box_labels.tolist()
 
     # keep the ordering for standard triplets
     triplets = np.concatenate(
@@ -65,7 +58,8 @@ def convert_item(
     return {
         "id": img_id,
         "seg_filename": str(seg_filename),
-        "annotation": annotation,
+        "bboxes": bboxes,
+        "categories": categories,
         "triplets": triplets.tolist(),
         "ng_triplets": ng_triplets.tolist(),
     }
