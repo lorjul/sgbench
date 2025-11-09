@@ -14,7 +14,9 @@ from .match import match_instances, remap_triplets
 from .version import FILE_VERSION
 
 
-def evaluate(anno_path, pred_path, gt_seg_dir=None, workers: int = 0):
+def evaluate(
+    anno_path, pred_path, gt_seg_dir=None, workers: int = 0, verbose: bool = False
+):
     with TemporaryDirectory(prefix="sgbench-") as tmp_dir:
         is_panoptic, triplets = load_sgbench(pred_path=pred_path, extract_dir=tmp_dir)
 
@@ -25,6 +27,7 @@ def evaluate(anno_path, pred_path, gt_seg_dir=None, workers: int = 0):
                 gt_seg_dir=Path(gt_seg_dir),
                 pred_seg_dir=Path(tmp_dir),
                 workers=workers,
+                verbose=verbose,
             )
         else:
             return _evaluate(
@@ -33,6 +36,7 @@ def evaluate(anno_path, pred_path, gt_seg_dir=None, workers: int = 0):
                 gt_seg_dir=None,
                 pred_seg_dir=None,
                 workers=workers,
+                verbose=verbose,
             )
 
 
@@ -165,6 +169,7 @@ def _evaluate(
     gt_seg_dir: Union[Path, None],
     pred_seg_dir: Union[Path, None],
     workers: int,
+    verbose: bool,
 ):
     preds = parse_pred(pred_data)
 
@@ -196,11 +201,23 @@ def _evaluate(
             all_res.append(res)
 
     if workers == 0:
-        for args in payload:
+        for i, args in enumerate(payload):
             all_res.append(_work(args))
+            if verbose and (i + 1) % 100 == 0:
+                s = f"\r{i + 1}/{len(payload)}"
+                print(s, flush=True, end="")
+        if verbose:
+            print(f"\rDone{(len(s) - 4) * ' '}")
+
     else:
         with mp.Pool(processes=workers) as pool:
-            all_res.extend(pool.map(_work, payload))
+            for i, x in enumerate(pool.imap(_work, payload)):
+                all_res.append(x)
+                if verbose and (i + 1) % 100 == 0:
+                    s = f"\r{i + 1}/{len(payload)}"
+                    print(s, flush=True, end="")
+            if verbose:
+                print(f"\rDone{(len(s) - 4) * ' '}")
 
     single_results = defaultdict(list)
     for res in all_res:

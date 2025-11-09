@@ -20,6 +20,7 @@ def cli():
         default=0,
         help="Number of workers to use for calculating the metrics",
     )
+    parser.add_argument("-v", "--verbose", action="store_true", default=False)
     args = parser.parse_args()
 
     metrics = evaluate(
@@ -27,6 +28,7 @@ def cli():
         pred_path=args.prediction,
         gt_seg_dir=args.gt_masks,
         workers=args.workers,
+        verbose=args.verbose,
     )
 
     for key, value in metrics.items():
