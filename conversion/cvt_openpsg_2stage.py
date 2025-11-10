@@ -30,7 +30,7 @@ def convert_item(
     # has to be retrieved from annotation file
     # orig_item.bboxes appears to be the same as orig_item.refine_bboxes
     # however, PSGTR only has refine_bboxes
-    bboxes: np.ndarray = orig_item.refine_bboxes
+    bboxes: np.ndarray = orig_item.refine_bboxes[:, :4]
     box_labels: np.ndarray = orig_item.labels - 1
     assert (box_labels >= 0).all()
     bboxes = bboxes.tolist()
