@@ -47,15 +47,23 @@ def recall(
 
     if mean:
         gt_sets = _by_pred_set(gt_triplets)
-        pred_sets = _by_pred_set(matched_triplets[:k])
+        pred_sets = _by_pred_set(deduplicate_pairs(matched_triplets[:k]))
         rs = np.full((num_predicates,), fill_value=np.nan, dtype=np.float64)
         for p, gt in gt_sets.items():
             rs[p] = len(gt.intersection(pred_sets[p])) / len(gt)
         return rs
     else:
         gt = set([tuple(x) for x in gt_triplets.tolist()])
-        pred = set([tuple(x) for x in matched_triplets[:k].tolist()])
+        pred = set([tuple(x) for x in deduplicate_pairs(matched_triplets[:k]).tolist()])
         return len(gt.intersection(pred)) / len(gt)
+
+
+def deduplicate_pairs(triplets: np.ndarray):
+    assert triplets.shape[1] == 3
+    # remove duplicate entries
+    # np.unique sorts the triplets. We don't want that! Keep the ordering the same
+    _, idxes = np.unique(triplets[:, :2], axis=0, return_index=True)
+    return triplets[np.sort(idxes)]
 
 
 def instance_recall(num_gt_instances: int, inst_pred2gt: np.ndarray):
